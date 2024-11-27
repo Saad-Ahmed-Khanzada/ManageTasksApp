@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import { createSelector } from '@reduxjs/toolkit';
+import { RootState } from "@/redux/store";
 interface Task {
   id: string;
   name: string;
@@ -7,6 +8,10 @@ interface Task {
   completed: boolean;
   completedAt?: number;
 }
+
+const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+
+
 
 const initialState: Task[] = [];
 
@@ -35,6 +40,12 @@ const tasksSlice = createSlice({
     },
   },
 });
+
+export const selectSortedTasks = createSelector(
+  [(state: RootState) => state.tasks],
+  (tasks) => [...tasks].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+);
+
 
 export const { addTask, toggleCompletion, deleteTask, archiveTasks } = tasksSlice.actions;
 export default tasksSlice.reducer;

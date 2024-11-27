@@ -1,8 +1,10 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Appearance } from 'react-native';
+import { themes } from '../constants/themes'; // Import themes
 
 interface ThemeContextProps {
-  theme: 'light' | 'darkk';
+  theme: 'light' | 'dark';
+  colors: typeof themes.light; // Add current theme colors
   toggleTheme: () => void;
 }
 
@@ -26,8 +28,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return () => listener.remove();
   }, []);
 
+  const colors = themes[theme]; // Set the current theme's colors
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, colors, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

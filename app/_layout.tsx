@@ -1,27 +1,46 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import TaskListScreen from '../app/screens/tasklist';
-import AddTaskScreen from '../app/screens/addtask';
-import { ThemeProvider } from '../contexts/ThemeContext';
-import { Provider } from 'react-redux';
-import { store } from '../redux/store';
+import React from "react";
+import { Provider } from "react-redux";
+import { Stack } from "expo-router";
+import {store } from "../redux/store";
+import { ThemeProvider } from "../contexts/ThemeContext";
+import { NavigationContainer } from "@react-navigation/native";
+import ThemeToggleButton from "./components/ThemeToggleButton";
+import TopBar from "./components/TopBar";
+// import { PersistGate } from "redux-persist/integration/react";
 
-const Stack = createStackNavigator();
-
-const AppLayout: React.FC = () => {
+export default function AppLayout() {
   return (
     <Provider store={store}>
+            {/* <PersistGate loading={null} persistor={persistor}> */}
+
       <ThemeProvider>
+        
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="TaskList">
-            <Stack.Screen name="TaskList" component={TaskListScreen} />
-            <Stack.Screen name="AddTask" component={AddTaskScreen} />
-          </Stack.Navigator>
+
+        <TopBar />
+          <Stack
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: "blue",
+              },
+              headerTintColor: "#fff",
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+            }}
+          >
+            {/* Define your screens */}
+            <Stack.Screen name="index"  options={{ headerShown: false }}   />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+
+            {/* <Stack.Screen name="tasklist" options={{ title: "Task List" }} /> */}
+            {/* <Stack.Screen name="screens" options={{ headerShown: false }}  /> */}
+          </Stack>
         </NavigationContainer>
       </ThemeProvider>
+      {/* </PersistGate> */}
+
     </Provider>
   );
-};
-
-export default AppLayout;
+}
