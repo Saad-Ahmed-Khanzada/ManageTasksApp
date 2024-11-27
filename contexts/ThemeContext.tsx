@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Appearance } from 'react-native';
 
 interface ThemeContextProps {
-  theme: 'light' | 'dark';
+  theme: 'light' | 'darkk';
   toggleTheme: () => void;
 }
 
