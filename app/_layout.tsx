@@ -21,7 +21,8 @@ export default function AppLayout() {
           <Stack
             screenOptions={{
               headerStyle: {
-                backgroundColor: "blue",
+                backgroundColor: "lightgray",
+            
               },
               headerTintColor: "#fff",
               headerTitleStyle: {
@@ -29,13 +30,11 @@ export default function AppLayout() {
               },
             }}
           >
-            {/* Define your screens */}
             <Stack.Screen name="index"  options={{ headerShown: false }}   />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
 
-            {/* <Stack.Screen name="tasklist" options={{ title: "Task List" }} /> */}
-            {/* <Stack.Screen name="screens" options={{ headerShown: false }}  /> */}
+           
           </Stack>
         </NavigationContainer>
       </ThemeProvider>

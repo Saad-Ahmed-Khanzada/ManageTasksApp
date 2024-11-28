@@ -1,47 +1,188 @@
-import React, { useContext } from "react";
-import { View, Text, FlatList, Button } from "react-native";
+import React, { useContext, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
-import { toggleCompletion, deleteTask } from "../../redux/slices/taskSlice";
+import {
+  toggleCompletion,
+  deleteTask,
+  archiveTasks,
+  autoArchiveTasks,
+} from "../../redux/slices/taskSlice";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import { selectSortedTasks } from "../../redux/slices/taskSlice";
+import { Link } from "expo-router";
 
 const TaskListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext);
-  const tasks = useSelector((state: RootState) => state.tasks);
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
   const dispatch = useDispatch();
 
   if (!themeContext) {
     throw new Error("ThemeContext must be used within a ThemeProvider");
   }
 
-  const { theme } = themeContext;
+  const { colors } = themeContext;
 
-  const sortedTasks = useSelector(selectSortedTasks);
+  const screenWidth = Dimensions.get("window").width;
 
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(autoArchiveTasks());
+    }, 10000);
+
+    return () => clearInterval(interval); 
+  }, [dispatch]);
+
+  const renderTask = ({ item }: any) => (
+    <View style={[styles.taskCard, { backgroundColor: colors.background }]}>
+      <Text
+        style={[
+          styles.taskText,
+          { color: colors.text, fontSize: screenWidth * 0.045 },
+        ]}
+      >
+        {item.name} - {item.priority} -{" "}
+        <Text
+          style={{
+            color: item.completed ? "green" : "orange",
+            fontWeight: "bold",
+          }}
+        >
+          {item.completed ? "Done" : "Pending"}
+        </Text>
+      </Text>
+      <View style={styles.taskActions}>
+        <TouchableOpacity
+          onPress={() => dispatch(toggleCompletion(item.id))}
+          style={[
+            styles.actionButton,
+            { backgroundColor: colors.primary, marginRight: 8 },
+          ]}
+        >
+          <Text style={{ color: colors.text, fontWeight: "bold" }}>Toggle</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => dispatch(deleteTask(item.id))}
+          style={[styles.actionButton, { backgroundColor: "red" }]}
+        >
+          <Text style={{ color: "white", fontWeight: "bold" }}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
-    <View className={`flex-1 p-4 ${theme === "dark" ? "bg-black" : "bg-white"}`}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text
+        style={[
+          styles.screenTitle,
+          { color: colors.text, fontSize: screenWidth * 0.06 },
+        ]}
+      >
+        Task List
+      </Text>
+
       <FlatList
-        data={sortedTasks}
+        data={tasks}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View className={`border-b pb-2 mb-2 ${theme === "dark" ? "border-gray-600" : "border-gray-300"}`}>
-            <Text className={`text-lg ${theme === "dark" ? "text-white" : "text-black"}`}>
-              {item.name} - {item.priority} - {item.completed ? "Done" : "Pending"}
-            </Text>
-            <Button title="Toggle" onPress={() => dispatch(toggleCompletion(item.id))} color={theme === "dark" ? "gray" : "blue"} />
-            <Button title="Delete" onPress={() => dispatch(deleteTask(item.id))} color="red" />
-          </View>
-        )}
+        renderItem={renderTask}
+        contentContainerStyle={styles.taskList}
+        ListEmptyComponent={
+          <Text
+            style={{
+              textAlign: "center",
+              color: colors.text,
+              marginTop: 20,
+              fontSize: screenWidth * 0.045,
+            }}
+          >
+            No tasks available. Please add a new task.
+          </Text>
+        }
       />
-      <Button
-        title="Add Task"
+
+      <TouchableOpacity
         onPress={() => navigation.navigate("AddTaskScreen")}
-        color={theme === "dark" ? "gray" : "blue"}
-      />
+        style={[styles.mainButton, { backgroundColor: colors.primary }]}
+      >
+        <Text style={{ color: colors.text, fontWeight: "bold" }}>Add Task</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => dispatch(archiveTasks())}
+        style={[styles.mainButton, { backgroundColor: colors.primary }]}
+      >
+        <Text style={{ color: colors.text, fontWeight: "bold" }}>
+          Archive Completed Tasks
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.mainButton, { backgroundColor: colors.primary }]}>
+        <Link
+          href="/screens/archivescreen2"
+          style={{
+            color: colors.text,
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          View Archived Tasks
+        </Link>
+      </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  screenTitle: {
+    textAlign: "center",
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  taskList: {
+    paddingBottom: 16,
+  },
+  taskCard: {
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3, 
+  },
+  taskText: {
+    marginBottom: 12,
+    fontWeight: "bold",
+  },
+  taskActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  actionButton: {
+    borderRadius: 8,
+    padding: 10,
+    flex: 1,
+    alignItems: "center",
+  },
+  mainButton: {
+    marginTop: 16,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+});
 
 export default TaskListScreen;
