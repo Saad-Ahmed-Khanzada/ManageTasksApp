@@ -18,7 +18,6 @@ const TopBar: React.FC = () => {
         backgroundColor: colors.primary,
       }}
     >
-      {/* Adjust StatusBar colors dynamically */}
       <StatusBar
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.primary}
