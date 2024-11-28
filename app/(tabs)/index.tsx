@@ -55,9 +55,15 @@ const TaskListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
             fontWeight: "bold",
           }}
         >
-          {item.completed ? "Done" : "Pending"}
+          {item.completed ? "Completed" : "Pending"}
         </Text>
       </Text>
+      <Text style={{ color: colors.text, marginBottom: 8 }}>
+  Due Date:{" "}
+  {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "No due date"}
+</Text>
+
+
       <View style={styles.taskActions}>
         <TouchableOpacity
           onPress={() => dispatch(toggleCompletion(item.id))}
@@ -77,7 +83,7 @@ const TaskListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
     </View>
   );
-
+  
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Text

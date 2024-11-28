@@ -6,6 +6,7 @@ interface Task {
   priority: 'High' | 'Medium' | 'Low'; 
   completed: boolean;
   completedAt?: number;
+  dueDate: string | null;
 }
 
 const initialState = {
@@ -17,13 +18,18 @@ const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-addTask: (state, action: PayloadAction<Task>) => {
-  state.tasks.push(action.payload);
-  state.tasks.sort((a, b) => {
-    const priorityOrder = { High: 1, Medium: 2, Low: 3 }; 
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
-  });
-},
+    addTask: (state, action: PayloadAction<Task>) => {
+      const task = {
+        ...action.payload,
+        dueDate: action.payload.dueDate ? new Date(action.payload.dueDate).toISOString() : null,
+      };
+      state.tasks.push(task);
+      state.tasks.sort((a, b) => {
+        const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      });
+    },
+    
     toggleCompletion: (state, action: PayloadAction<string>) => {
       const task = state.tasks.find((task) => task.id === action.payload);
       if (task) {

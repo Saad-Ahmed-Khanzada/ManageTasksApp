@@ -6,14 +6,22 @@ import {
   TouchableOpacity,
   Text,
   Dimensions,
+  Platform,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { useDispatch } from "react-redux";
 import { addTask } from "../../redux/slices/taskSlice";
 import { ThemeContext } from "@/contexts/ThemeContext";
 
 const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [task, setTask] = useState({ name: "", priority: "Low" });
+  const [task, setTask] = useState({
+    name: "",
+    priority: "Low" as "Low" | "Medium" | "High",
+    dueDate: null as Date | null, 
+  });
+
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const dispatch = useDispatch();
   const themeContext = useContext(ThemeContext);
 
@@ -23,11 +31,25 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const { colors } = themeContext;
 
-  const screenWidth = Dimensions.get("window").width;
-
   const handleAddTask = () => {
-    dispatch(addTask({ ...task, id: Date.now().toString(), completed: false }));
+    dispatch(
+      addTask({
+        id: Date.now().toString(),
+        name: task.name,
+        priority: task.priority,
+        completed: false,
+        dueDate: task.dueDate ? task.dueDate.toISOString() : null,
+      })
+    );
     navigation.goBack();
+  };
+  
+
+  const onChangeDate = (event: any, selectedDate?: Date) => {
+    setDatePickerVisible(false); 
+    if (selectedDate) {
+      setTask({ ...task, dueDate: selectedDate });
+    }
   };
 
   return (
@@ -57,6 +79,26 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Picker.Item label="Medium" value="Medium" />
         <Picker.Item label="High" value="High" />
       </Picker>
+
+      <TouchableOpacity
+        onPress={() => setDatePickerVisible(true)}
+        style={[styles.button, { backgroundColor: colors.primary, marginBottom: 16 }]}
+      >
+        <Text style={{ color: colors.text, fontWeight: "bold" }}>
+          {task.dueDate
+            ? `Due Date: ${task.dueDate.toLocaleDateString()}`
+            : "Select Due Date"}
+        </Text>
+      </TouchableOpacity>
+
+      {isDatePickerVisible && (
+        <DateTimePicker
+          value={task.dueDate || new Date()}
+          mode="date"
+          display={Platform.OS === "ios" ? "inline" : "default"}
+          onChange={onChangeDate}
+        />
+      )}
 
       <TouchableOpacity
         onPress={handleAddTask}

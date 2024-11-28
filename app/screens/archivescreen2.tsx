@@ -20,7 +20,7 @@ const ArchivedTasksScreen: React.FC = () => {
   const screenWidth = Dimensions.get("window").width;
 
   const renderTask = ({ item }: any) => (
-    <View style={[styles.taskCard, { backgroundColor: colors.background }]}>
+    <View style={[styles.taskCard, { backgroundColor: colors.primary }]}>
       <Text
         style={[
           styles.taskName,

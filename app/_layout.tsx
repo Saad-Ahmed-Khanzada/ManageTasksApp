@@ -21,7 +21,8 @@ export default function AppLayout() {
           <Stack
             screenOptions={{
               headerStyle: {
-                backgroundColor: "lightgray",
+                backgroundColor: "purple",
+                
             
               },
               headerTintColor: "#fff",

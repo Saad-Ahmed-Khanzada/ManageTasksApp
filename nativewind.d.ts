@@ -1,4 +1,4 @@
-// nativewind.d.ts
+
 import "react-native";
 
 declare module "react-native" {

@@ -6,7 +6,8 @@ import Portfolio from "./addtask";
 
 import TaskListScreen from ".";
 import AddTaskScreen from "./addtask";
-// import TaskListScreen from "../screens/tasklist";
+import { Image } from "react-native";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -26,11 +27,34 @@ const TabLayout: React.FC = () => {
       <Tab.Screen
         name="Task List Screen"
         component={TaskListScreen}
-      
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused
+                  ?  require("@/assets/images/taskList.png")
+                  : require("@/assets/images/taskList.png")
+              }
+              style={{ width: 25, height: 25 }}
+            />
+          ),
+        }}
       />
       <Tab.Screen
         name="AddTaskScreen"
         component={AddTaskScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused
+                  ?   require("@/assets/images/addTask.png")
+                  :  require("@/assets/images/addTask.png")
+              }
+              style={{ width: 27, height: 27 }}
+            />
+          ),
+        }}
      
       />
    
