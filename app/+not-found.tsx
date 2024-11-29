@@ -1,16 +1,53 @@
-import { Link, Stack } from "expo-router";
-import { View, Text } from "react-native";
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function NotFoundScreen() {
+  const navigation = useNavigation();
+
   return (
-    <>
-      <Stack.Screen options={{ title: "Oops!" }} />
-      <Text className="flex-1 items-center justify-center p-5">
-        <Text className="text-xl font-bold">This screen doesn't exist.</Text>
-        <Link href="/" className="mt-4 py-4">
-          <Text className="text-blue-500 underline">Go to home screen!</Text>
-        </Link>
-      </Text>
-    </>
+    <View style={styles.container}>
+      <Text style={styles.title}>Oops!</Text>
+      <Text style={styles.message}>This screen doesn't exist.</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Index")} 
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Go to Home Screen</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+    backgroundColor: "#f8f9fa",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#333",
+  },
+  message: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "#666",
+    marginBottom: 32,
+  },
+  button: {
+    backgroundColor: "#007bff",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

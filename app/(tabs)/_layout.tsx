@@ -1,65 +1,48 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
-
-
-import Portfolio from "./addtask";
-
-import TaskListScreen from ".";
-import AddTaskScreen from "./addtask";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image } from "react-native";
-
+import TaskListScreen from "./index";
+import AddTaskScreen from "./addtask";
 
 const Tab = createBottomTabNavigator();
 
-const TabLayout: React.FC = () => {
+export default function TabsScreen() {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
           paddingBottom: 18,
           paddingTop: 5,
           height: 80,
         },
-      }}
+        tabBarIcon: ({ focused }) => {
+          let icon;
+
+          switch (route.name) {
+            case "TaskList":
+              icon = focused
+                ? require("@/assets/images/taskList.png")
+                : require("@/assets/images/taskList.png");
+              break;
+            case "AddTask":
+              icon = focused
+                ? require("@/assets/images/taskList.png")
+                : require("@/assets/images/taskList.png");
+              break;
+          }
+
+          return <Image source={icon} style={{ width: 25, height: 25 }} />;
+        },
+      })}
     >
-  
-      <Tab.Screen
-        name="Task List Screen"
-        component={TaskListScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Image
-              source={
-                focused
-                  ?  require("@/assets/images/taskList.png")
-                  : require("@/assets/images/taskList.png")
-              }
-              style={{ width: 25, height: 25 }}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="AddTaskScreen"
-        component={AddTaskScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Image
-              source={
-                focused
-                  ?   require("@/assets/images/addTask.png")
-                  :  require("@/assets/images/addTask.png")
-              }
-              style={{ width: 27, height: 27 }}
-            />
-          ),
-        }}
-     
-      />
-   
+      <Tab.Screen name="TaskList" component={TaskListScreen} />
+      <Tab.Screen name="AddTask" component={AddTaskScreen} />
     </Tab.Navigator>
   );
-};
+}
 
-export default TabLayout;
+
+
+// require("@/assets/images/taskList.png")
+// require("@/assets/images/addTask.png")

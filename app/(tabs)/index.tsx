@@ -16,9 +16,13 @@ import {
   autoArchiveTasks,
 } from "../../redux/slices/taskSlice";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import { Link } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+// import { Link } from "expo-router";
 
-const TaskListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+const TaskListScreen: React.FC= () => {
+  
+  const navigation = useNavigation(); 
+
   const themeContext = useContext(ThemeContext);
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
   const dispatch = useDispatch();
@@ -114,8 +118,8 @@ const TaskListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         }
       />
 
-      <TouchableOpacity
-        onPress={() => navigation.navigate("AddTaskScreen")}
+<TouchableOpacity
+        onPress={() => navigation.navigate("AddTask")} 
         style={[styles.mainButton, { backgroundColor: colors.primary }]}
       >
         <Text style={{ color: colors.text, fontWeight: "bold" }}>Add Task</Text>
@@ -130,17 +134,21 @@ const TaskListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.mainButton, { backgroundColor: colors.primary }]}>
-        <Link
+      <TouchableOpacity onPress={() => navigation.navigate("ArchivedTasksScreen")} style={[styles.mainButton, { backgroundColor: colors.primary }]}>
+        {/* <Link
           href="/screens/archivescreen2"
           style={{
             color: colors.text,
             fontWeight: "bold",
             textAlign: "center",
           }}
-        >
-          View Archived Tasks
-        </Link>
+        > */}
+          <Text  style={{
+            color: colors.text,
+            fontWeight: "bold",
+            textAlign: "center",
+          }}>View Archived Tasks</Text>
+        {/* </Link> */}
       </TouchableOpacity>
     </View>
   );

@@ -1,11 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useLayoutEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import { Stack } from "expo-router";
+// import { Stack } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Icon from 'react-native-ionicons'
+
+
 
 const ArchivedTasksScreen: React.FC = () => {
+  const navigation = useNavigation();
   const themeContext = useContext(ThemeContext);
   const archivedTasks = useSelector(
     (state: RootState) => state.tasks.archivedTasks
@@ -18,6 +24,8 @@ const ArchivedTasksScreen: React.FC = () => {
   const { colors } = themeContext;
 
   const screenWidth = Dimensions.get("window").width;
+
+
 
   const renderTask = ({ item }: any) => (
     <View style={[styles.taskCard, { backgroundColor: colors.primary }]}>
@@ -45,8 +53,14 @@ const ArchivedTasksScreen: React.FC = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Archived Tasks" }} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
+       
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={[styles.backButton, { backgroundColor: colors.primary }]}
+      >
+        <Text style={{ color: colors.text, fontWeight: "bold" }}>Go Back</Text>
+      </TouchableOpacity>
         <Text
           style={[
             styles.screenTitle,
@@ -109,6 +123,14 @@ const styles = StyleSheet.create({
   taskPriority: {
     fontWeight: "600",
   },
+  backButton: {
+    padding: 8,
+    borderRadius: 8,
+    alignItems: "center",
+    alignSelf: "flex-start", // Align the button to the left
+    marginBottom: 16,
+    flexDirection: "row",
+  }
 });
 
 export default ArchivedTasksScreen;

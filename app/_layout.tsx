@@ -1,12 +1,21 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { Stack } from "expo-router";
+import { createStackNavigator } from "@react-navigation/stack";
 import {store } from "../redux/store";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { NavigationContainer } from "@react-navigation/native";
 import ThemeToggleButton from "./components/ThemeToggleButton";
 import TopBar from "./components/TopBar";
-// import { PersistGate } from "redux-persist/integration/react";
+import IndexScreen from "./index"; 
+import TabsScreen from "./(tabs)/_layout";
+import NotFoundScreen from "./+not-found"; 
+import ArchivedTasksScreen from "./screens/archivescreen2"; 
+import AddTaskScreen from "./(tabs)/addtask";
+import { RootStackParamList } from "@/navigation";
+
+const Stack = createStackNavigator<RootStackParamList>();
+
+
 
 export default function AppLayout() {
   return (
@@ -18,25 +27,22 @@ export default function AppLayout() {
         <NavigationContainer>
 
         <TopBar />
-          <Stack
+        <Stack.Navigator
             screenOptions={{
-              headerStyle: {
-                backgroundColor: "purple",
-                
-            
-              },
+              headerStyle: { backgroundColor: "purple" },
               headerTintColor: "#fff",
-              headerTitleStyle: {
-                fontWeight: "bold",
-              },
+              headerTitleStyle: { fontWeight: "bold" },
             }}
           >
-            <Stack.Screen name="index"  options={{ headerShown: false }}   />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="Index" component={IndexScreen}  options={{ headerShown: false }}   />
+            <Stack.Screen name="Tabs" component={TabsScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="AddTask" component={AddTaskScreen} />
+
+            <Stack.Screen name="ArchivedTasksScreen" component={ArchivedTasksScreen} options={{ headerShown: false }} />
+            <Stack.Screen  name="NotFound" component={NotFoundScreen} options={{headerShown:false}}/>
 
            
-          </Stack>
+            </Stack.Navigator>
         </NavigationContainer>
       </ThemeProvider>
       {/* </PersistGate> */}

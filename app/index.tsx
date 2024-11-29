@@ -9,11 +9,13 @@ import {
   Animated,
   StyleSheet,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import { ThemeContext } from "@/contexts/ThemeContext";
 
 export default function Index() {
 
-  const router = useRouter(); 
+  const navigation = useNavigation();
 
   const themeContext = useContext(ThemeContext);
 
@@ -108,7 +110,7 @@ export default function Index() {
     padding: screenWidth * 0.03,
     borderRadius: 8,
   }}
-  onPress={() => router.push("(tabs)")}
+  onPress={() => navigation.navigate("Tabs")} 
 >
   <Text
     style={{
