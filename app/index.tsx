@@ -27,10 +27,10 @@ export default function Index() {
   const screenHeight = Dimensions.get("window").height;
 
   const navigationItems = [
-    { href: "screens/page1", image: require("../assets/images/bitruptLogo.png") },
-    {  href: "screens/page2", image: require("../assets/images/bitruptLogo.png") },
-    { href: "screens/page3", image: require("../assets/images/bitruptLogo.png") },
-    { href: "screens/page4", image: require("../assets/images/bitruptLogo.png") },
+    {  image: require("../assets/images/bitruptLogo.png") },
+    {  image: require("../assets/images/bitruptLogo.png") },
+    { image: require("../assets/images/bitruptLogo.png") },
+    {image: require("../assets/images/bitruptLogo.png") },
   ];
 
   const angleIncrement = (2 * Math.PI) / navigationItems.length;
