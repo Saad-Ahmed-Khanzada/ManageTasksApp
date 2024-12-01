@@ -1,24 +1,21 @@
 import React, { useState, useContext } from "react";
 import {
   View,
-  TextInput,
   StyleSheet,
-  TouchableOpacity,
-  Text,
-  Dimensions,
-  Platform,
 } from "react-native";
+import { TextInput, Button, Text, Card } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { useDispatch } from "react-redux";
 import { addTask } from "../../redux/slices/taskSlice";
 import { ThemeContext } from "@/contexts/ThemeContext";
+import { LinearGradient } from "expo-linear-gradient";
 
 const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [task, setTask] = useState({
     name: "",
     priority: "Low" as "Low" | "Medium" | "High",
-    dueDate: null as Date | null, 
+    dueDate: null as Date | null,
   });
 
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
@@ -43,70 +40,77 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     );
     navigation.goBack();
   };
-  
 
   const onChangeDate = (event: any, selectedDate?: Date) => {
-    setDatePickerVisible(false); 
+    setDatePickerVisible(false);
     if (selectedDate) {
       setTask({ ...task, dueDate: selectedDate });
     }
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Add New Task</Text>
+    <LinearGradient
+      colors={[colors.primary, colors.accent,colors.primary]}
+      style={styles.container}
+    >
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="headlineMedium" style={[styles.title, { color: colors.accent }]}>
+            Add New Task
+          </Text>
+          <TextInput
+ placeholder="Task name"
+  value={task.name}
+  onChangeText={(text) => setTask({ ...task, name: text })}
+  mode="outlined"
+  style={[styles.input, { borderColor: colors.text ,color: colors.accent}]}
+  theme={{
+    colors: {
 
-      <TextInput
-        placeholder="Task Name"
-        placeholderTextColor={colors.text}
-        value={task.name}
-        onChangeText={(text) => setTask({ ...task, name: text })}
-        style={[
-          styles.input,
-          {
-            borderColor: colors.text,
-            color: colors.text,
-          },
-        ]}
-      />
+      background: colors.text2,
+      
+    },
+  }}
+/>
 
-      <Picker
-        selectedValue={task.priority}
-        onValueChange={(value) => setTask({ ...task, priority: value })}
-        style={[styles.picker, { backgroundColor: colors.primary, color: colors.text }]}
-      >
-        <Picker.Item label="Low" value="Low" />
-        <Picker.Item label="Medium" value="Medium" />
-        <Picker.Item label="High" value="High" />
-      </Picker>
-
-      <TouchableOpacity
-        onPress={() => setDatePickerVisible(true)}
-        style={[styles.button, { backgroundColor: colors.primary, marginBottom: 16 }]}
-      >
-        <Text style={{ color: colors.text, fontWeight: "bold" }}>
-          {task.dueDate
-            ? `Due Date: ${task.dueDate.toLocaleDateString()}`
-            : "Select Due Date"}
-        </Text>
-      </TouchableOpacity>
-
-      {isDatePickerVisible && (
-        <DateTimePicker
-          value={task.dueDate || new Date()}
-          mode="date"
-          display={Platform.OS === "ios" ? "inline" : "default"}
-          onChange={onChangeDate}
-        />
-      )}
-
-      <TouchableOpacity
-        onPress={handleAddTask}
-        style={[styles.button, { backgroundColor: colors.primary }]}
-      >
-        <Text style={{ color: colors.text, fontWeight: "bold" }}>Add Task</Text>
-      </TouchableOpacity>
-    </View>
+          <Picker
+            selectedValue={task.priority}
+            onValueChange={(value) => setTask({ ...task, priority: value })}
+            style={[styles.picker, { color: colors.accent ,borderColor: colors.text}]}
+          >
+            <Picker.Item label="Low" value="Low" />
+            <Picker.Item label="Medium" value="Medium" />
+            <Picker.Item label="High" value="High" />
+          </Picker>
+          <Button
+            mode="outlined"
+            onPress={() => setDatePickerVisible(true)}
+            style={[styles.dateButton, { borderColor: colors.text }]}
+            textColor={colors.accent}
+          >
+            {task.dueDate
+              ? `Due Date: ${task.dueDate.toLocaleDateString()}`
+              : "Select Due Date"}
+          </Button>
+          {isDatePickerVisible && (
+            <DateTimePicker
+              value={task.dueDate || new Date()}
+              mode="date"
+              display="default"
+              onChange={onChangeDate}
+            />
+          )}
+          <Button
+            mode="contained"
+            onPress={handleAddTask}
+            style={[styles.addButton, { backgroundColor: colors.accent }]}
+            textColor={colors.background}
+          >
+            Add Task
+          </Button>
+        </Card.Content>
+      </Card>
+    </LinearGradient>
   );
 };
 
@@ -116,33 +120,30 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: "center",
   },
+  card: {
+    borderRadius: 16,
+    padding: 16,
+  },
   title: {
-    fontSize: Dimensions.get("window").width * 0.06,
-    fontWeight: "bold",
     textAlign: "center",
     marginBottom: 20,
   },
   input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
     marginBottom: 16,
-    fontSize: Dimensions.get("window").width * 0.04,
   },
   picker: {
-    borderRadius: 8,
     marginBottom: 16,
-    fontSize: Dimensions.get("window").width * 0.04,
+    backgroundColor: "#ffffff",
+    
   },
-  button: {
-    padding: 12,
+  dateButton: {
+    marginBottom: 16,
+    borderWidth: 1,
     borderRadius: 8,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+  },
+  addButton: {
+    marginTop: 16,
+    borderRadius: 8,
   },
 });
 

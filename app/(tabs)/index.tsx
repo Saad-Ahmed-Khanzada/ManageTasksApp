@@ -1,12 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { View, StyleSheet, FlatList } from "react-native";
+import { Card, Button, Text, Divider } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import {
@@ -17,185 +11,272 @@ import {
 } from "../../redux/slices/taskSlice";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
-// import { Link } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialIcons } from "@expo/vector-icons";
 
-const TaskListScreen: React.FC= () => {
-  
-  const navigation = useNavigation(); 
+const TaskListScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
 
   const themeContext = useContext(ThemeContext);
-  const tasks = useSelector((state: RootState) => state.tasks.tasks);
-  const dispatch = useDispatch();
-
   if (!themeContext) {
     throw new Error("ThemeContext must be used within a ThemeProvider");
   }
 
   const { colors } = themeContext;
 
-  const screenWidth = Dimensions.get("window").width;
-
-
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(autoArchiveTasks());
     }, 10000);
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, [dispatch]);
 
   const renderTask = ({ item }: any) => (
-    <View style={[styles.taskCard, { backgroundColor: colors.background }]}>
-      <Text
-        style={[
-          styles.taskText,
-          { color: colors.text, fontSize: screenWidth * 0.045 },
-        ]}
-      >
-        {item.name} - {item.priority} -{" "}
-        <Text
-          style={{
-            color: item.completed ? "green" : "orange",
-            fontWeight: "bold",
-          }}
-        >
-          {item.completed ? "Completed" : "Pending"}
+    <Card
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.primary,
+          shadowColor: colors.accent,
+    
+        },
+      ]}
+    >
+      <Card.Content>
+        <Text style={[styles.taskTitle, { color: colors.text }]}>
+          {item.name}
         </Text>
-      </Text>
-      <Text style={{ color: colors.text, marginBottom: 8 }}>
-  Due Date:{" "}
-  {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "No due date"}
-</Text>
+        <Divider style={styles.divider} />
 
+        <View style={styles.grid}>
+          <View style={styles.gridItem}>
+            <Text style={[styles.label, { color: colors.accent }]}>Priority</Text>
+            <Text style={[styles.value, { color: colors.text }]}>
+              {item.priority}
+            </Text>
+          </View>
+          <View style={styles.gridItem}>
+            <Text style={[styles.label, { color: colors.accent }]}>Status</Text>
+            <Text
+              style={[
+                styles.value,
+                {
+                  color: item.completed ? "green" : "red",
+                  fontWeight: "bold",
+                },
+              ]}
+            >
+              {item.completed ? "Completed" : "Pending"}
+            </Text>
+          </View>
+          <View style={styles.gridItem}>
+            <Text style={[styles.label, { color: colors.accent }]}>
+              Due Date
+            </Text>
+            <Text style={[styles.value, { color: colors.text }]}>
+              {item.dueDate
+                ? new Date(item.dueDate).toLocaleDateString()
+                : "No due date"}
+            </Text>
+          </View>
+        </View>
 
-      <View style={styles.taskActions}>
-        <TouchableOpacity
-          onPress={() => dispatch(toggleCompletion(item.id))}
+        <View style={styles.taskActions}>
+          <Button
+            mode="outlined"
+            textColor={colors.accent}
+            onPress={() => dispatch(toggleCompletion(item.id))}
+            style={[
+              styles.actionButton,
+              { borderColor: colors.accent, marginRight: 8 },
+            ]}
+            icon={() => (
+              <MaterialIcons name="done" size={16} color={colors.accent} />
+            )}
+          >
+            Toggle
+          </Button>
+          <Button
+            mode="contained"
+            buttonColor="red"
+            textColor="white"
+            onPress={() => dispatch(deleteTask(item.id))}
+            icon={() => <MaterialIcons name="delete" size={16} color="white" />}
+          >
+            Delete
+          </Button>
+        </View>
+      </Card.Content>
+    </Card>
+  );
+
+  return (
+    <LinearGradient
+      colors={[colors.accent,colors.primary]}
+      style={styles.container}
+    >
+      <View style={styles.header}>
+        <Text style={[styles.screenTitle, { color: "#ffff" }]}>
+          Task List
+        </Text>
+        <Button
+          icon="plus"
+          mode="contained"
+          onPress={() => navigation.navigate("AddTask")}
           style={[
-            styles.actionButton,
-            { backgroundColor: colors.primary, marginRight: 8 },
+            styles.addTaskButton,
+            { backgroundColor: colors.secondary, textColor: colors.text },
           ]}
         >
-          <Text style={{ color: colors.text, fontWeight: "bold" }}>Toggle</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => dispatch(deleteTask(item.id))}
-          style={[styles.actionButton, { backgroundColor: "red" }]}
-        >
-          <Text style={{ color: "white", fontWeight: "bold" }}>Delete</Text>
-        </TouchableOpacity>
+          Add Task
+        </Button>
       </View>
-    </View>
-  );
-  
-  return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text
-        style={[
-          styles.screenTitle,
-          { color: colors.text, fontSize: screenWidth * 0.06 },
-        ]}
-      >
-        Task List
-      </Text>
 
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id}
         renderItem={renderTask}
-        contentContainerStyle={styles.taskList}
+        contentContainerStyle={styles.listContainer}
         ListEmptyComponent={
-          <Text
-            style={{
-              textAlign: "center",
-              color: colors.text,
-              marginTop: 20,
-              fontSize: screenWidth * 0.045,
-            }}
-          >
-            No tasks available. Please add a new task.
-          </Text>
+          <View style={styles.emptyContainer}>
+            <MaterialIcons
+              name="playlist-add"
+              size={48}
+              color="#ffff"
+            />
+            <Text style={[styles.emptyText, { color: "#ffff" }]}>
+              No tasks available. Please add a new task.
+            </Text>
+          </View>
         }
       />
 
-<TouchableOpacity
-        onPress={() => navigation.navigate("AddTask")} 
-        style={[styles.mainButton, { backgroundColor: colors.primary }]}
-      >
-        <Text style={{ color: colors.text, fontWeight: "bold" }}>Add Task</Text>
-      </TouchableOpacity>
+      <View style={styles.bottomActions}>
+        <Button
+        
+          mode="outlined"
+          onPress={() => navigation.navigate("ArchivedTasksScreen")}
+          style={[styles.archiveButton, { borderColor: colors.text }]}
+          textColor={colors.text}
+        >
+          View Archived Tasks
+        </Button>
 
-      <TouchableOpacity
-        onPress={() => dispatch(archiveTasks())}
-        style={[styles.mainButton, { backgroundColor: colors.primary }]}
-      >
-        <Text style={{ color: colors.text, fontWeight: "bold" }}>
+        <Button
+          mode="outlined"
+          onPress={() => dispatch(archiveTasks())}
+          style={[
+            styles.archiveCompletedButton,
+            { borderColor: colors.text },
+          ]}
+          textColor={colors.text}
+        >
           Archive Completed Tasks
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate("ArchivedTasksScreen")} style={[styles.mainButton, { backgroundColor: colors.primary }]}>
-        {/* <Link
-          href="/screens/archivescreen2"
-          style={{
-            color: colors.text,
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        > */}
-          <Text  style={{
-            color: colors.text,
-            fontWeight: "bold",
-            textAlign: "center",
-          }}>View Archived Tasks</Text>
-        {/* </Link> */}
-      </TouchableOpacity>
-    </View>
+        </Button>
+      </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 4,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 4,
+    marginBottom: 12,
   },
   screenTitle: {
-    textAlign: "center",
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    textAlign: "left",
   },
-  taskList: {
+  listContainer: {
     paddingBottom: 16,
   },
-  taskCard: {
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3, 
+  card: {
+    borderRadius: 16,
+    marginBottom: 10,
+    padding: 2,
+    elevation: 4,
+    shadowRadius: 5,
+
+    
   },
-  taskText: {
-    marginBottom: 12,
+  taskTitle: {
+    fontSize: 22,
     fontWeight: "bold",
+    marginBottom: 2,
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginVertical: 1,
+  },
+  gridItem: {
+    flexBasis: "33%",
+    marginBottom: 8,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  value: {
+    fontSize: 13,
+    opacity: 0.9,
+    textAlign: "center",
   },
   taskActions: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 4,
   },
   actionButton: {
-    borderRadius: 8,
-    padding: 10,
     flex: 1,
+    borderWidth: 1,
+  },
+  divider: {
+    marginVertical: 8,
+    backgroundColor: "#ccc",
+  },
+  addTaskButton: {
+    paddingHorizontal: 10,
+    borderRadius: 12,
+  },
+  bottomActions: {
+    marginTop: 10,
     alignItems: "center",
   },
-  mainButton: {
-    marginTop: 16,
-    padding: 12,
-    borderRadius: 8,
+  archiveButton: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 50,
+    marginBottom: 10,
+    fontWeight:"light"
+  },
+  archiveCompletedButton: {
+    paddingHorizontal: 50,
+    borderWidth: 1,
+    borderRadius: 16,
+    marginBottom: 10,
+  },
+  emptyContainer: {
     alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+  },
+  emptyText: {
+    textAlign: "center",
+    fontSize: 18,
+    marginTop: 20,
   },
 });
 

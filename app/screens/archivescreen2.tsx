@@ -1,14 +1,10 @@
-import React, { useContext, useLayoutEffect } from "react";
-import { View, Text, FlatList, StyleSheet, Dimensions } from "react-native";
+import React, { useContext } from "react";
+import { View, StyleSheet, FlatList, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ThemeContext } from "@/contexts/ThemeContext";
-// import { Stack } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import Icon from 'react-native-ionicons'
-
-
+import { Card, Text, Button, Divider, Chip } from "react-native-paper";
 
 const ArchivedTasksScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -22,74 +18,104 @@ const ArchivedTasksScreen: React.FC = () => {
   }
 
   const { colors } = themeContext;
-
   const screenWidth = Dimensions.get("window").width;
 
-
-
   const renderTask = ({ item }: any) => (
-    <View style={[styles.taskCard, { backgroundColor: colors.primary }]}>
-      <Text
-        style={[
-          styles.taskName,
-          { color: colors.text, fontSize: screenWidth * 0.045 },
-        ]}
-      >
-        {item.name}
-      </Text>
-      <Text
-        style={[
-          styles.taskPriority,
-          {
-            color: item.priority === "High" ? "red" : colors.text,
-            fontSize: screenWidth * 0.04,
-          },
-        ]}
-      >
-        Priority: {item.priority}
-      </Text>
-    </View>
+    <Card
+      style={[
+        styles.taskCard,
+        {
+          backgroundColor: colors.primary,
+          shadowColor: colors.accent,
+        },
+      ]}
+    >
+      <Card.Content>
+        <View style={styles.taskHeader}>
+          <Text
+            style={[
+              styles.taskName,
+              { color: colors.text, fontSize: screenWidth * 0.045 },
+            ]}
+          >
+            Task Name:
+          </Text>
+          <Chip style={[styles.chip, { backgroundColor: colors.secondary }]}>
+            <Text style={{ color: colors.text }}>{item.name}</Text>
+          </Chip>
+        </View>
+        <Divider style={styles.divider} />
+        <View style={styles.taskDetails}>
+          <View style={styles.detailItem}>
+            <Text style={[styles.label, { color: colors.accent }]}>
+              Priority:
+            </Text>
+            <Text
+              style={[
+                styles.value,
+                {
+                  color: item.priority === "High" ? "red" : colors.text,
+                  fontWeight: "bold",
+                },
+              ]}
+            >
+              {item.priority}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={[styles.label, { color: colors.accent }]}>Status:</Text>
+            <Text
+              style={[
+                styles.value,
+                {
+                  color: "green",
+                  fontWeight: "bold",
+                },
+              ]}
+            >
+              Archived
+            </Text>
+          </View>
+        </View>
+      </Card.Content>
+    </Card>
   );
 
   return (
-    <>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-       
-      <TouchableOpacity
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Button
+        mode="outlined"
         onPress={() => navigation.goBack()}
-        style={[styles.backButton, { backgroundColor: colors.primary }]}
-      >
-        <Text style={{ color: colors.text, fontWeight: "bold" }}>Go Back</Text>
-      </TouchableOpacity>
-        <Text
-          style={[
-            styles.screenTitle,
-            { color: colors.text, fontSize: screenWidth * 0.06 },
-          ]}
-        >
-          Archived Tasks
-        </Text>
+        icon="arrow-left"
+        style={[styles.backButton]}
+        textColor={colors.text}
+      />
+   
+      
 
-        <FlatList
-          data={archivedTasks}
-          keyExtractor={(item) => item.id}
-          renderItem={renderTask}
-          contentContainerStyle={styles.taskList}
-          ListEmptyComponent={
-            <Text
-              style={{
-                textAlign: "center",
-                color: colors.text,
-                marginTop: 20,
-                fontSize: screenWidth * 0.045,
-              }}
-            >
+      <Text
+        style={[
+          styles.screenTitle,
+          { color: colors.text, fontSize: screenWidth * 0.06 },
+        ]}
+      >
+        Archived Tasks
+      </Text>
+
+      <FlatList
+        data={archivedTasks}
+        keyExtractor={(item) => item.id}
+        renderItem={renderTask}
+        contentContainerStyle={styles.taskList}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={[styles.emptyText, { color: colors.text }]}>
               No archived tasks available.
             </Text>
-          }
-        />
-      </View>
-    </>
+          </View>
+        }
+      />
+    </View>
   );
 };
 
@@ -107,30 +133,54 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   taskCard: {
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 12,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
     shadowRadius: 4,
-    elevation: 3, 
+    padding: 12,
   },
-  taskName: {
-    fontWeight: "bold",
+  taskHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
-  taskPriority: {
-    fontWeight: "600",
+  chip: {
+    marginLeft: 8,
+    paddingHorizontal: 8,
+  },
+  taskDetails: {
+    marginTop: 12,
+  },
+  detailItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  value: {
+    fontSize: 16,
+  },
+  divider: {
+    marginVertical: 8,
   },
   backButton: {
-    padding: 8,
+    padding: 1,
     borderRadius: 8,
+    marginBottom: 8,
+    alignSelf: "flex-start",
+  },
+  emptyContainer: {
+    marginTop: 20,
     alignItems: "center",
-    alignSelf: "flex-start", // Align the button to the left
-    marginBottom: 16,
-    flexDirection: "row",
-  }
+  },
+  emptyText: {
+    textAlign: "center",
+    fontSize: 18,
+  },
 });
 
 export default ArchivedTasksScreen;
